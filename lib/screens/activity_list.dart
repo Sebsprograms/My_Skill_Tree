@@ -52,7 +52,7 @@ class ActivityList extends StatelessWidget {
       child: GridView.builder(
         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 2,
-          childAspectRatio: 1.3,
+          childAspectRatio: 1.25,
           mainAxisSpacing: 8,
           crossAxisSpacing: 8,
         ),
