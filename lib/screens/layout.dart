@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:my_skill_tree/screens/activity_list.dart';
+
+const pageTitles = ['Activities', 'Statistics', 'Skills', 'Log'];
 
 class Layout extends StatefulWidget {
   const Layout({super.key, required this.toggleTheme});
@@ -11,6 +14,19 @@ class Layout extends StatefulWidget {
 
 class _LayoutState extends State<Layout> {
   int _page = 0;
+  PageController _pageController = PageController();
+
+  @override
+  void initState() {
+    _pageController = PageController(initialPage: _page);
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _pageController.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -22,31 +38,67 @@ class _LayoutState extends State<Layout> {
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.primary,
         title: Text(
-          'Layout',
+          pageTitles[_page],
           style: Theme.of(context)
               .textTheme
               .headlineMedium!
               .copyWith(color: Theme.of(context).colorScheme.onPrimary),
         ),
       ),
-      body: PageView(),
+      body: PageView(
+        physics: const NeverScrollableScrollPhysics(),
+        controller: _pageController,
+        onPageChanged: (int page) {
+          setState(() {
+            _page = page;
+          });
+        },
+        children: <Widget>[
+          ActivityList(),
+          Center(
+            child: Text('Statistics'),
+          ),
+          Center(
+            child: Text('Skills'),
+          ),
+          Center(
+            child: Text('Log'),
+          ),
+        ],
+      ),
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
-        items: const <BottomNavigationBarItem>[
+        backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+        currentIndex: _page,
+        onTap: (int index) {
+          _pageController.jumpToPage(index);
+          setState(() {
+            _page = index;
+          });
+        },
+        items: <BottomNavigationBarItem>[
           BottomNavigationBarItem(
-            icon: Icon(Icons.workspaces_outline),
+            icon: Icon(
+              Icons.workspaces_outline,
+            ),
             label: 'Activities',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.bar_chart_rounded),
+            icon: Icon(
+              Icons.bar_chart_rounded,
+            ),
             label: 'Statistics',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.linear_scale_rounded),
+            icon: Icon(
+              Icons.linear_scale_rounded,
+            ),
             label: 'Skills',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.list),
+            icon: Icon(
+              Icons.list,
+            ),
             label: 'Log',
           ),
         ],
