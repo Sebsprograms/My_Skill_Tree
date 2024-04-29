@@ -54,19 +54,4 @@ extension RewardExtension on Reward {
         return 100;
     }
   }
-
-  Color get color {
-    switch (this) {
-      case Reward.tiny:
-        return Colors.green;
-      case Reward.small:
-        return Colors.blue;
-      case Reward.medium:
-        return Colors.purple;
-      case Reward.large:
-        return Colors.orange;
-      case Reward.huge:
-        return Colors.red;
-    }
-  }
 }
