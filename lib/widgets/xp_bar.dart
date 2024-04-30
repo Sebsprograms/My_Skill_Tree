@@ -5,16 +5,17 @@ class XpBar extends StatelessWidget {
     super.key,
     required this.currentXp,
     required this.xpToNextLevel,
+    this.height = 8,
   });
 
   final int currentXp;
   final int xpToNextLevel;
+  final double height;
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8),
-      height: 8,
+      height: height,
       child: LinearProgressIndicator(
         value: currentXp / xpToNextLevel,
         valueColor: const AlwaysStoppedAnimation<Color>(Colors.green),

@@ -71,7 +71,8 @@ final dummySkills = [
   Skill(
     id: '1',
     name: 'Running',
-    description: 'Running, sprinting and marathons.',
+    description:
+        'Running, sprinting and marathons. lorem ipsum dolor sit amet. lorem lorem ipsum dolor sit amet. lorem lorem ipsum dolor sit amet. lorem lorem ipsum dolor sit amet. lorem lorem ipsum dolor sit amet. lorem lorem ipsum dolor sit amet. lorem ',
     color: Colors.green,
     currentLevel: 1,
     currentXp: 99,
