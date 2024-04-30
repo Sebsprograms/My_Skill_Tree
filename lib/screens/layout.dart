@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:my_skill_tree/screens/activity_list.dart';
+import 'package:my_skill_tree/screens/skills_list.dart';
 
 const pageTitles = ['Activities', 'Statistics', 'Skills', 'Log'];
 
@@ -13,7 +14,7 @@ class Layout extends StatefulWidget {
 }
 
 class _LayoutState extends State<Layout> {
-  int _page = 0;
+  int _page = 2;
   PageController _pageController = PageController();
 
   @override
@@ -58,9 +59,7 @@ class _LayoutState extends State<Layout> {
           Center(
             child: Text('Statistics'),
           ),
-          Center(
-            child: Text('Skills'),
-          ),
+          SkillList(),
           Center(
             child: Text('Log'),
           ),
