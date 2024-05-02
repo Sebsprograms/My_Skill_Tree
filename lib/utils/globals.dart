@@ -23,12 +23,12 @@ const skillColors = {
 };
 
 const appColors = {
-  'green': Colors.green,
-  'blue': Colors.blue,
-  'red': Colors.red,
-  'yellow': Colors.yellow,
-  'orange': Colors.orange,
-  'purple': Colors.purple,
-  'pink': Colors.pink,
-  'brown': Colors.brown,
+  'Green': Colors.green,
+  'Blue': Colors.blue,
+  'Red': Colors.red,
+  'Yellow': Colors.yellow,
+  'Orange': Colors.orange,
+  'Purple': Colors.purple,
+  'Pink': Colors.pink,
+  'Brown': Colors.brown,
 };
