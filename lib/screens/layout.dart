@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:my_skill_tree/providers/user_provider.dart';
 import 'package:my_skill_tree/screens/activity_list.dart';
 import 'package:my_skill_tree/screens/settings.dart';
 import 'package:my_skill_tree/screens/skills_list.dart';
+import 'package:provider/provider.dart';
 
 const pageTitles = [
   'Activities',
@@ -22,8 +24,15 @@ class _LayoutState extends State<Layout> {
   int _page = 2;
   PageController _pageController = PageController();
 
+  initUserData() async {
+    UserProvider userProvider = Provider.of(context, listen: false);
+    if (userProvider.user != null) return;
+    await userProvider.getCurrentUser();
+  }
+
   @override
   void initState() {
+    initUserData();
     _pageController = PageController(initialPage: _page);
     super.initState();
   }

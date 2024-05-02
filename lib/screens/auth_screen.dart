@@ -46,11 +46,14 @@ class _AuthScreenState extends State<AuthScreen> {
         password: _password,
       );
     } else {
+      String uiColor = appColors.entries
+          .firstWhere((element) => element.value == widget.uiColor)
+          .key;
       response = await AuthMethods().signUpUser(
         email: _email,
         password: _password,
         name: _name,
-        uiColor: widget.uiColor,
+        uiColor: uiColor,
       );
     }
     setState(() {
