@@ -50,10 +50,9 @@ class _AppState extends State<App> {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    final allColors = appColors.values.toList();
     AppUser? user = Provider.of<UserProvider>(context).user;
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'My Skill Tree',
       theme: ThemeData(
         // check user collection for selected ui color.
         colorScheme: ColorScheme.fromSeed(

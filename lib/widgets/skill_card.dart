@@ -21,6 +21,7 @@ class SkillCard extends StatelessWidget {
         );
       },
       child: Card(
+        color: Theme.of(context).colorScheme.secondaryContainer,
         child: Padding(
           padding: const EdgeInsets.all(12.0),
           child: Row(
@@ -71,6 +72,5 @@ class SkillCard extends StatelessWidget {
         ),
       ),
     );
-    ;
   }
 }

@@ -17,9 +17,10 @@ class XpBar extends StatelessWidget {
     return Container(
       height: height,
       child: LinearProgressIndicator(
+        borderRadius: BorderRadius.circular(height / 2),
         value: currentXp / xpToNextLevel,
         valueColor: const AlwaysStoppedAnimation<Color>(Colors.green),
-        backgroundColor: Theme.of(context).colorScheme.secondaryContainer,
+        backgroundColor: Theme.of(context).colorScheme.onSecondary,
       ),
     );
   }

@@ -3,6 +3,7 @@ import 'package:my_skill_tree/providers/user_provider.dart';
 import 'package:my_skill_tree/screens/activity_list.dart';
 import 'package:my_skill_tree/screens/settings.dart';
 import 'package:my_skill_tree/screens/skills_list.dart';
+import 'package:my_skill_tree/widgets/add_skill_dialog.dart';
 import 'package:provider/provider.dart';
 
 const pageTitles = [
@@ -55,6 +56,34 @@ class _LayoutState extends State<Layout> {
               .headlineMedium!
               .copyWith(color: Theme.of(context).colorScheme.onPrimary),
         ),
+        actions: [
+          if (_page == 0)
+            IconButton(
+              icon: Icon(
+                Icons.add,
+                color: Theme.of(context).colorScheme.onPrimary,
+                size: 30.0,
+              ),
+              onPressed: () {
+                print('Add activity');
+              },
+            ),
+          if (_page == 2)
+            IconButton(
+              icon: Icon(
+                Icons.add,
+                color: Theme.of(context).colorScheme.onPrimary,
+                size: 30.0,
+              ),
+              onPressed: () {
+                showDialog(
+                    context: context,
+                    builder: (context) {
+                      return AddSkillDialog();
+                    });
+              },
+            ),
+        ],
       ),
       body: PageView(
         physics: const NeverScrollableScrollPhysics(),
