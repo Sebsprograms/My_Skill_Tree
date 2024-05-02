@@ -1,7 +1,8 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 class Skill {
-  String id;
+  String? id;
   String name;
   String description;
   Color color;
@@ -11,7 +12,7 @@ class Skill {
   Difficulty difficulty;
 
   Skill({
-    required this.id,
+    this.id,
     required this.name,
     required this.description,
     required this.color,
@@ -20,6 +21,32 @@ class Skill {
     required this.xpToNextLevel,
     required this.difficulty,
   });
+
+  static Skill fromSnapshot(DocumentSnapshot snapshot) {
+    final data = snapshot.data() as Map<String, dynamic>;
+    return Skill(
+      id: snapshot.id,
+      name: data['name'],
+      description: data['description'],
+      color: Color(data['color']),
+      currentLevel: data['currentLevel'],
+      currentXp: data['currentXp'],
+      xpToNextLevel: data['xpToNextLevel'],
+      difficulty: DifficultyExtension.fromString(data['difficulty']),
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'name': name,
+      'description': description,
+      'color': color.value,
+      'currentLevel': currentLevel,
+      'currentXp': currentXp,
+      'xpToNextLevel': xpToNextLevel,
+      'difficulty': difficulty.name,
+    };
+  }
 }
 
 enum Difficulty {
@@ -46,6 +73,24 @@ extension DifficultyExtension on Difficulty {
         return 'C';
       case Difficulty.d:
         return 'D';
+    }
+  }
+
+  static Difficulty fromString(String name) {
+    switch (name) {
+      case 'SS':
+        return Difficulty.ss;
+      case 'S':
+        return Difficulty.s;
+      case 'A':
+        return Difficulty.a;
+      case 'B':
+        return Difficulty.b;
+      case 'C':
+        return Difficulty.c;
+      case 'D':
+      default:
+        return Difficulty.d;
     }
   }
 

@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:my_skill_tree/models/skill.dart';
+import 'package:my_skill_tree/providers/user_provider.dart';
+import 'package:my_skill_tree/resources/firebase_firestore.dart';
 import 'package:my_skill_tree/screens/activity_list.dart';
 import 'package:my_skill_tree/widgets/difficulty_emblem.dart';
 import 'package:my_skill_tree/widgets/level_emblem.dart';
 import 'package:my_skill_tree/widgets/xp_bar.dart';
+import 'package:provider/provider.dart';
 
 class SkillDetailsScreen extends StatefulWidget {
   const SkillDetailsScreen({
@@ -28,6 +31,7 @@ class _SkillDetailsScreenState extends State<SkillDetailsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    UserProvider user = Provider.of<UserProvider>(context, listen: false);
     return Scaffold(
       appBar: AppBar(
         centerTitle: !_editing,
@@ -46,7 +50,10 @@ class _SkillDetailsScreenState extends State<SkillDetailsScreen> {
           _editing
               ? IconButton(
                   icon: const Icon(Icons.delete),
-                  onPressed: () {},
+                  onPressed: () {
+                    FirestoreMethods().deleteSkill(user.user!, widget.skill);
+                    Navigator.pop(context);
+                  },
                 )
               : const SizedBox(),
           _editing
@@ -65,7 +72,8 @@ class _SkillDetailsScreenState extends State<SkillDetailsScreen> {
         width: double.infinity,
         child: Column(
           children: [
-            Padding(
+            Container(
+              color: Theme.of(context).colorScheme.secondaryContainer,
               padding: const EdgeInsets.all(12.0),
               child: Column(
                 children: [

@@ -8,43 +8,7 @@ class ActivityList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     //  dummy activities
-    final List<Activity> activities = [
-      Activity(
-        name: 'Running',
-        reward: Reward.medium,
-        icon: Icons.directions_run,
-        skillColor: Colors.green,
-        cooldown: const Duration(hours: 1),
-      ),
-      Activity(
-        name: 'Reading',
-        reward: Reward.small,
-        icon: Icons.book,
-        skillColor: Colors.blue,
-        cooldown: const Duration(hours: 2),
-      ),
-      Activity(
-        name: 'Coding',
-        reward: Reward.large,
-        icon: Icons.code,
-        skillColor: Colors.purple,
-        cooldown: const Duration(hours: 4),
-      ),
-      Activity(
-        name: 'Coding',
-        reward: Reward.huge,
-        icon: Icons.code,
-        skillColor: Colors.purple,
-        cooldown: const Duration(hours: 4),
-      ),
-      Activity(
-        name: 'Meditation',
-        reward: Reward.medium,
-        icon: Icons.self_improvement,
-        skillColor: Colors.orange,
-        cooldown: const Duration(hours: 1),
-      ),
-    ];
+    final List<Activity> activities = [];
 
     return Container(
       color: Theme.of(context).colorScheme.secondary,
