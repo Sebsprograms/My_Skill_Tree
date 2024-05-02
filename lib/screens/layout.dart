@@ -3,6 +3,7 @@ import 'package:my_skill_tree/providers/user_provider.dart';
 import 'package:my_skill_tree/screens/activity_list.dart';
 import 'package:my_skill_tree/screens/settings.dart';
 import 'package:my_skill_tree/screens/skills_list.dart';
+import 'package:my_skill_tree/widgets/add_activity_dialog.dart';
 import 'package:my_skill_tree/widgets/add_skill_dialog.dart';
 import 'package:provider/provider.dart';
 
@@ -22,7 +23,7 @@ class Layout extends StatefulWidget {
 }
 
 class _LayoutState extends State<Layout> {
-  int _page = 2;
+  int _page = 0;
   PageController _pageController = PageController();
 
   initUserData() async {
@@ -65,7 +66,11 @@ class _LayoutState extends State<Layout> {
                 size: 30.0,
               ),
               onPressed: () {
-                print('Add activity');
+                showDialog(
+                    context: context,
+                    builder: (context) {
+                      return const AddActivityDialog();
+                    });
               },
             ),
           if (_page == 2)

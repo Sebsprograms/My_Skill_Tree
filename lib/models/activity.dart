@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 class Activity {
-  final String id;
+  String? id;
   final String name;
   final Reward reward;
   final IconData icon;
@@ -11,7 +11,7 @@ class Activity {
   final Duration cooldown;
 
   Activity({
-    required this.id,
+    this.id,
     required this.name,
     required this.reward,
     required this.icon,
