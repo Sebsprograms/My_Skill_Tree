@@ -2,16 +2,31 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/services.dart';
 import 'package:my_skill_tree/models/user.dart';
+import 'package:my_skill_tree/utils/globals.dart';
 
 class AuthMethods {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
+  Future<AppUser> getCurrentUser() async {
+    User? user = _auth.currentUser;
+    if (user != null) {
+      DocumentSnapshot userDoc =
+          await _firestore.collection('users').doc(user.uid).get();
+      return AppUser.fromSnapshot(userDoc);
+    } else {
+      throw PlatformException(
+        code: 'ERROR_USER_NOT_FOUND',
+        message: 'No user found',
+      );
+    }
+  }
+
   Future<String> signUpUser({
     required String email,
     required String password,
     required String name,
-    required Color uiColor,
+    required String uiColor,
   }) async {
     String response = 'something went wrong';
 
@@ -77,5 +92,14 @@ class AuthMethods {
 
   Future<void> signOutUser() async {
     await _auth.signOut();
+  }
+
+  Future<void> updateUserColor(String colorKey) async {
+    User? user = _auth.currentUser;
+    if (user != null) {
+      await _firestore.collection('users').doc(user.uid).update(
+        {'uiColor': colorKey},
+      );
+    }
   }
 }

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:my_skill_tree/models/skill.dart';
 import 'package:my_skill_tree/screens/skill_details_screen.dart';
 import 'package:my_skill_tree/widgets/difficulty_emblem.dart';

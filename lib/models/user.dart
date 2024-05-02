@@ -3,9 +3,9 @@ import 'package:flutter/services.dart';
 
 class AppUser {
   final String uid;
-  final String name;
+  String name;
   final String email;
-  final Color uiColor;
+  String uiColor;
 
   AppUser({
     required this.uid,
@@ -19,7 +19,7 @@ class AppUser {
       'uid': uid,
       'name': name,
       'email': email,
-      'uiColor': uiColor.value,
+      'uiColor': uiColor,
     };
   }
 
@@ -29,7 +29,7 @@ class AppUser {
       uid: data['uid'],
       name: data['name'],
       email: data['email'],
-      uiColor: Color(data['uiColor']),
+      uiColor: data['uiColor'],
     );
   }
 }
