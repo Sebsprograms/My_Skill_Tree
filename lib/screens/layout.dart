@@ -1,13 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:my_skill_tree/screens/activity_list.dart';
+import 'package:my_skill_tree/screens/settings.dart';
 import 'package:my_skill_tree/screens/skills_list.dart';
 
-const pageTitles = ['Activities', 'Statistics', 'Skills', 'Log'];
+const pageTitles = [
+  'Activities',
+  'Statistics',
+  'Skills',
+  'Log',
+  'Settings',
+];
 
 class Layout extends StatefulWidget {
-  const Layout({super.key, required this.toggleTheme});
-
-  final void Function() toggleTheme;
+  const Layout({super.key});
 
   @override
   State<Layout> createState() => _LayoutState();
@@ -32,10 +37,6 @@ class _LayoutState extends State<Layout> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      floatingActionButton: FloatingActionButton(
-        onPressed: widget.toggleTheme,
-        child: Icon(Icons.color_lens),
-      ),
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.primary,
         title: Text(
@@ -54,7 +55,7 @@ class _LayoutState extends State<Layout> {
             _page = page;
           });
         },
-        children: <Widget>[
+        children: const <Widget>[
           ActivityList(),
           Center(
             child: Text('Statistics'),
@@ -63,6 +64,7 @@ class _LayoutState extends State<Layout> {
           Center(
             child: Text('Log'),
           ),
+          Settings(),
         ],
       ),
       bottomNavigationBar: BottomNavigationBar(
@@ -75,7 +77,7 @@ class _LayoutState extends State<Layout> {
             _page = index;
           });
         },
-        items: <BottomNavigationBarItem>[
+        items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
             icon: Icon(
               Icons.workspaces_outline,
@@ -99,6 +101,12 @@ class _LayoutState extends State<Layout> {
               Icons.list,
             ),
             label: 'Log',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(
+              Icons.settings,
+            ),
+            label: 'Settings',
           ),
         ],
       ),
