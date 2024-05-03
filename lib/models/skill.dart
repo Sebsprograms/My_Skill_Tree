@@ -76,6 +76,23 @@ extension DifficultyExtension on Difficulty {
     }
   }
 
+  int get difficultyXpIncrease {
+    switch (this) {
+      case Difficulty.ss:
+        return 50;
+      case Difficulty.s:
+        return 25;
+      case Difficulty.a:
+        return 20;
+      case Difficulty.b:
+        return 15;
+      case Difficulty.c:
+        return 10;
+      case Difficulty.d:
+        return 5;
+    }
+  }
+
   static Difficulty fromString(String name) {
     switch (name) {
       case 'SS':
