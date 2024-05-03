@@ -32,14 +32,33 @@ class ActivityCard extends StatelessWidget {
             Expanded(
               child: Container(),
             ),
-            Text(activity.name, style: Theme.of(context).textTheme.titleMedium),
-            Text('Cooldown: ${activity.cooldown.inHours} hours'),
+            Text(activity.name,
+                style: Theme.of(context)
+                    .textTheme
+                    .titleMedium!
+                    .copyWith(fontWeight: FontWeight.bold)),
+            if (activity.cooldown.inMinutes < 60)
+              Text(
+                '${activity.cooldown.inMinutes} minutes',
+                style: Theme.of(context).textTheme.titleMedium,
+              )
+            else if (activity.cooldown.inHours < 24)
+              Text(
+                '${activity.cooldown.inHours} hours',
+                style: Theme.of(context).textTheme.titleMedium,
+              )
+            else
+              Text(
+                '${activity.cooldown.inDays} days',
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
           ],
         ),
       ),
     );
 
-    if (activity.cooldown.inHours > 2) {
+    //  Conditionally render the cooldown overlay
+    if (false) {
       content = Stack(
         children: <Widget>[
           content,
