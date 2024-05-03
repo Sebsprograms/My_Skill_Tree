@@ -125,7 +125,10 @@ class _SkillDetailsScreenState extends State<SkillDetailsScreen> {
               ),
             ),
             Expanded(
-              child: ActivityList(),
+              child: ActivityList(
+                activitiesStream: FirestoreMethods()
+                    .activitiesForSkillStream(user.user!, widget.skill.id!),
+              ),
             ),
           ],
         ),

@@ -69,7 +69,7 @@ class _AddActivityDialogState extends State<AddActivityDialog> {
       final activity = Activity(
         name: _name,
         reward: reward,
-        icon: _icon!,
+        icon: _icon,
         skillId: _selectedSkill!.id!,
         skillColor: _selectedSkill!.color,
         cooldown: cooldown,
@@ -96,6 +96,9 @@ class _AddActivityDialogState extends State<AddActivityDialog> {
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Please enter a name';
+                  }
+                  if (value.length > 15) {
+                    return 'Name must be 15 characters or less';
                   }
                   return null;
                 },

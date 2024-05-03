@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:my_skill_tree/providers/user_provider.dart';
+import 'package:my_skill_tree/resources/firebase_firestore.dart';
 import 'package:my_skill_tree/screens/activity_list.dart';
+import 'package:my_skill_tree/screens/loading_screen.dart';
 import 'package:my_skill_tree/screens/settings.dart';
 import 'package:my_skill_tree/screens/skills_list.dart';
 import 'package:my_skill_tree/widgets/add_activity_dialog.dart';
@@ -47,6 +49,10 @@ class _LayoutState extends State<Layout> {
 
   @override
   Widget build(BuildContext context) {
+    UserProvider user = Provider.of<UserProvider>(context);
+    if (user.user == null) {
+      return const LoadingScreen();
+    }
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.primary,
@@ -98,16 +104,19 @@ class _LayoutState extends State<Layout> {
             _page = page;
           });
         },
-        children: const <Widget>[
-          ActivityList(),
-          Center(
+        children: <Widget>[
+          ActivityList(
+            activitiesStream:
+                FirestoreMethods().allActivitiesStream(user.user!),
+          ),
+          const Center(
             child: Text('Statistics'),
           ),
-          SkillList(),
-          Center(
+          const SkillList(),
+          const Center(
             child: Text('Log'),
           ),
-          Settings(),
+          const Settings(),
         ],
       ),
       bottomNavigationBar: BottomNavigationBar(
