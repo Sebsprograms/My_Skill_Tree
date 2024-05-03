@@ -14,6 +14,15 @@ class FirestoreMethods {
         (list) => list.docs.map((doc) => Skill.fromSnapshot(doc)).toList());
   }
 
+  Stream<Skill> oneSkillStream(AppUser user, String skillId) {
+    var ref = _firestore
+        .collection('skills')
+        .doc(user.uid)
+        .collection('skills')
+        .doc(skillId);
+    return ref.snapshots().map((doc) => Skill.fromSnapshot(doc));
+  }
+
   Future<List<Skill>> getSkills(AppUser user) async {
     var ref =
         _firestore.collection('skills').doc(user.uid).collection('skills');
@@ -55,6 +64,48 @@ class FirestoreMethods {
     await ref.add(activity.toJson());
   }
 
+  Future<bool> isActivityOnCooldown(AppUser user, Activity activity) async {
+    // Get the most recent entry on the activity log
+    var ref = _firestore
+        .collection('activity_logs')
+        .doc(user.uid)
+        .collection('activity_logs')
+        .where('activityId', isEqualTo: activity.id)
+        .orderBy('timeStamp', descending: true)
+        .limit(1);
+    var snapshot = await ref.get();
+    if (snapshot.docs.isEmpty) {
+      return false;
+    }
+    Log lastLog = Log.fromSnapshot(snapshot.docs.first);
+    DateTime now = DateTime.now();
+    DateTime lastLogTime = lastLog.timeStamp;
+    Duration difference = now.difference(lastLogTime);
+    return difference.inSeconds < activity.cooldown.inSeconds;
+  }
+
+  Future<Duration> getRemainingActivityCooldown(
+      AppUser user, Activity activity) {
+    return _firestore
+        .collection('activity_logs')
+        .doc(user.uid)
+        .collection('activity_logs')
+        .where('activityId', isEqualTo: activity.id)
+        .orderBy('timeStamp', descending: true)
+        .limit(1)
+        .get()
+        .then((snapshot) {
+      if (snapshot.docs.isEmpty) {
+        return Duration.zero;
+      }
+      Log lastLog = Log.fromSnapshot(snapshot.docs.first);
+      DateTime now = DateTime.now();
+      DateTime lastLogTime = lastLog.timeStamp;
+      Duration difference = now.difference(lastLogTime);
+      return activity.cooldown - difference;
+    });
+  }
+
   Future<void> updateSkill(AppUser user, Skill skill) async {
     var ref = _firestore
         .collection('skills')
@@ -65,12 +116,36 @@ class FirestoreMethods {
   }
 
   Future<void> deleteSkill(AppUser user, Skill skill) async {
+    // Delete skill
     var ref = _firestore
         .collection('skills')
         .doc(user.uid)
         .collection('skills')
         .doc(skill.id);
     await ref.delete();
+
+    // Delete all activities associated with the skill
+    var activityRef = _firestore
+        .collection('activities')
+        .doc(user.uid)
+        .collection('activities')
+        .where('skillId', isEqualTo: skill.id);
+    var activitySnapshot = await activityRef.get();
+    for (var doc in activitySnapshot.docs) {
+      await doc.reference.delete();
+    }
+
+    // Delete all logs associated with the skill
+
+    var logRef = _firestore
+        .collection('activity_logs')
+        .doc(user.uid)
+        .collection('activity_logs')
+        .where('skillId', isEqualTo: skill.id);
+    var logSnapshot = await logRef.get();
+    for (var doc in logSnapshot.docs) {
+      await doc.reference.delete();
+    }
   }
 
   Future<void> deleteActivity(AppUser user, Activity activity) async {
