@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:my_skill_tree/models/activity.dart';
+import 'package:my_skill_tree/models/log.dart';
 import 'package:my_skill_tree/models/skill.dart';
 import 'package:my_skill_tree/models/user.dart';
 
@@ -79,5 +80,109 @@ class FirestoreMethods {
         .collection('activities')
         .doc(activity.id);
     await ref.delete();
+  }
+
+  Future<Skill> getOneSkillById(AppUser user, String skillId) async {
+    var ref = _firestore
+        .collection('skills')
+        .doc(user.uid)
+        .collection('skills')
+        .doc(skillId);
+    var snapshot = await ref.get();
+    return Skill.fromSnapshot(snapshot);
+  }
+
+  Future<void> incrememtSkillXp(AppUser user, Skill skill, int xp) async {
+    if (skill.currentXp + xp >= skill.xpToNextLevel) {
+      var ref = _firestore
+          .collection('skills')
+          .doc(user.uid)
+          .collection('skills')
+          .doc(skill.id);
+      await ref.update({
+        'currentXp': skill.currentXp + xp - skill.xpToNextLevel,
+        'currentLevel': skill.currentLevel + 1,
+        'xpToNextLevel':
+            skill.xpToNextLevel + skill.difficulty.difficultyXpIncrease,
+      });
+    } else {
+      var ref = _firestore
+          .collection('skills')
+          .doc(user.uid)
+          .collection('skills')
+          .doc(skill.id);
+      await ref.update({'currentXp': skill.currentXp + xp});
+    }
+  }
+
+  Future<void> decrementSkillXp(AppUser user, Skill skill, int xp) async {
+    if (skill.currentXp - xp < 0) {
+      var ref = _firestore
+          .collection('skills')
+          .doc(user.uid)
+          .collection('skills')
+          .doc(skill.id);
+      await ref.update({
+        'currentXp': (skill.xpToNextLevel -
+                skill.xpToNextLevel -
+                skill.difficulty.difficultyXpIncrease) -
+            (xp - skill.currentXp),
+        'currentLevel': skill.currentLevel - 1,
+        'xpToNextLevel':
+            skill.xpToNextLevel - skill.difficulty.difficultyXpIncrease,
+      });
+    } else {
+      var ref = _firestore
+          .collection('skills')
+          .doc(user.uid)
+          .collection('skills')
+          .doc(skill.id);
+      await ref.update({'currentXp': skill.currentXp - xp});
+    }
+  }
+
+  Future<void> logActivityAndIncrementSkill(
+    AppUser user,
+    Activity activity,
+  ) async {
+    // Log the activity
+    var logRef = _firestore
+        .collection('activity_logs')
+        .doc(user.uid)
+        .collection('activity_logs');
+    Log newLog = Log(
+      activityId: activity.id!,
+      skillId: activity.skillId,
+      timeStamp: DateTime.now(),
+      xp: activity.reward.value,
+    );
+    await logRef.add(newLog.toJson());
+
+    // Increment the skill's xp
+    Skill skill = await getOneSkillById(user, activity.skillId);
+    await incrememtSkillXp(user, skill, activity.reward.value);
+  }
+
+  Future<void> deleteLogAndDecrementSkill(AppUser user, Log log) async {
+    // Delete the log
+    var logRef = _firestore
+        .collection('activity_logs')
+        .doc(user.uid)
+        .collection('activity_logs')
+        .doc(log.id);
+    await logRef.delete();
+
+    // Decrement the skill's xp
+    Skill skill = await getOneSkillById(user, log.skillId);
+    await decrementSkillXp(user, skill, log.xp);
+  }
+
+  Future<List<Log>> getLogs(AppUser user) async {
+    var ref = _firestore
+        .collection('activity_logs')
+        .doc(user.uid)
+        .collection('activity_logs');
+    var snapshot = await ref.get();
+    return snapshot.docs.map((doc) => Log.fromSnapshot(doc)).toList();
   }
 }
