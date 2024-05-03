@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:my_skill_tree/models/activity.dart';
 import 'package:my_skill_tree/providers/user_provider.dart';
@@ -15,6 +17,51 @@ class ActivityCard extends StatefulWidget {
 
 class _ActivityCardState extends State<ActivityCard> {
   bool _isOnCooldown = false;
+  Duration _cooldown = const Duration();
+
+  Timer? _cooldownTimer;
+
+  void _initData() async {
+    UserProvider userProvider =
+        Provider.of<UserProvider>(context, listen: false);
+    bool isOnCooldown = await FirestoreMethods()
+        .isActivityOnCooldown(userProvider.user!, widget.activity);
+    setState(() {
+      _isOnCooldown = isOnCooldown;
+    });
+    if (isOnCooldown) {
+      _cooldown = await FirestoreMethods()
+          .getRemainingActivityCooldown(userProvider.user!, widget.activity);
+      startTimer();
+    }
+  }
+
+  void startTimer() {
+    _cooldownTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (_cooldown.inSeconds == 0) {
+        timer.cancel();
+        setState(() {
+          _isOnCooldown = false;
+        });
+      } else {
+        setState(() {
+          _cooldown = _cooldown - const Duration(seconds: 1);
+        });
+      }
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _initData();
+  }
+
+  @override
+  void dispose() {
+    _cooldownTimer?.cancel();
+    super.dispose();
+  }
 
   _logActivity() async {
     setState(() {
@@ -24,6 +71,8 @@ class _ActivityCardState extends State<ActivityCard> {
         Provider.of<UserProvider>(context, listen: false);
     await FirestoreMethods()
         .logActivityAndIncrementSkill(userProvider.user!, widget.activity);
+    _cooldown = widget.activity.cooldown;
+    startTimer();
   }
 
   @override
@@ -62,18 +111,18 @@ class _ActivityCardState extends State<ActivityCard> {
                       .copyWith(fontWeight: FontWeight.bold)),
               if (widget.activity.cooldown.inMinutes < 60)
                 Text(
-                  '${widget.activity.cooldown.inMinutes} minutes',
-                  style: Theme.of(context).textTheme.titleMedium,
+                  'Cooldown: ${widget.activity.cooldown.inMinutes} min',
+                  style: Theme.of(context).textTheme.titleSmall,
                 )
               else if (widget.activity.cooldown.inHours < 24)
                 Text(
-                  '${widget.activity.cooldown.inHours} hours',
-                  style: Theme.of(context).textTheme.titleMedium,
+                  'Cooldown: ${widget.activity.cooldown.inHours} hr',
+                  style: Theme.of(context).textTheme.titleSmall,
                 )
               else
                 Text(
-                  '${widget.activity.cooldown.inDays} days',
-                  style: Theme.of(context).textTheme.titleMedium,
+                  'Cooldown: ${widget.activity.cooldown.inDays} days',
+                  style: Theme.of(context).textTheme.titleSmall,
                 ),
             ],
           ),
@@ -104,19 +153,20 @@ class _ActivityCardState extends State<ActivityCard> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                      'Activity',
+                      widget.activity.name,
                       style: Theme.of(context).textTheme.titleMedium!.copyWith(
                             color: Colors.white,
                           ),
                     ),
                     Text(
-                      'Cooldown',
+                      'Cooldown:',
                       style: Theme.of(context).textTheme.titleMedium!.copyWith(
                             color: Colors.white,
                           ),
                     ),
                     Text(
-                      '00:00:00',
+                      // Displaying the remaining cooldown time HH:MM:SS
+                      '${_cooldown.inHours.toString().padLeft(2, '0')}:${(_cooldown.inMinutes % 60).toString().padLeft(2, '0')}:${(_cooldown.inSeconds % 60).toString().padLeft(2, '0')}',
                       style: Theme.of(context).textTheme.titleMedium!.copyWith(
                             color: Colors.white,
                           ),

@@ -37,7 +37,7 @@ class SkillList extends StatelessWidget {
             itemCount: skills.length,
             itemBuilder: (BuildContext context, int index) {
               final skill = skills[index];
-              return SkillCard(skill: skill);
+              return SkillCard(skill: skill, key: ValueKey(skill.id));
             },
           );
         },

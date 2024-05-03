@@ -16,7 +16,7 @@ class SkillCard extends StatelessWidget {
       onTap: () {
         Navigator.of(context).push(
           MaterialPageRoute(
-            builder: (context) => SkillDetailsScreen(skill: skill),
+            builder: (context) => SkillDetailsScreen(skillId: skill.id!),
           ),
         );
       },
