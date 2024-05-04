@@ -3,6 +3,7 @@ import 'package:my_skill_tree/providers/user_provider.dart';
 import 'package:my_skill_tree/resources/firebase_firestore.dart';
 import 'package:my_skill_tree/screens/activity_list.dart';
 import 'package:my_skill_tree/screens/loading_screen.dart';
+import 'package:my_skill_tree/screens/log.dart';
 import 'package:my_skill_tree/screens/settings.dart';
 import 'package:my_skill_tree/screens/skills_list.dart';
 import 'package:my_skill_tree/widgets/add_activity_dialog.dart';
@@ -113,9 +114,7 @@ class _LayoutState extends State<Layout> {
             child: Text('Statistics'),
           ),
           const SkillList(),
-          const Center(
-            child: Text('Log'),
-          ),
+          const LogScreen(),
           const Settings(),
         ],
       ),
