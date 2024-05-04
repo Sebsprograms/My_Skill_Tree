@@ -39,6 +39,30 @@ class FirestoreMethods {
         (list) => list.docs.map((doc) => Activity.fromSnapshot(doc)).toList());
   }
 
+  Future<Activity> getOneActivityById(AppUser user, String activityId) async {
+    var ref = _firestore
+        .collection('activities')
+        .doc(user.uid)
+        .collection('activities')
+        .doc(activityId);
+    var snapshot = await ref.get();
+    return Activity.fromSnapshot(snapshot);
+  }
+
+  Future<void> deleteLogEntryAndDecrementSkill(AppUser user, Log log) async {
+    // Delete the log
+    var logRef = _firestore
+        .collection('activity_logs')
+        .doc(user.uid)
+        .collection('activity_logs')
+        .doc(log.id);
+    await logRef.delete();
+
+    // Decrement the skill's xp
+    Skill skill = await getOneSkillById(user, log.skillId);
+    await decrementSkillXp(user, skill, log.xp);
+  }
+
   Stream<List<Activity>> activitiesForSkillStream(
       AppUser user, String skillId) {
     var ref = _firestore
@@ -198,10 +222,9 @@ class FirestoreMethods {
           .collection('skills')
           .doc(skill.id);
       await ref.update({
-        'currentXp': (skill.xpToNextLevel -
-                skill.xpToNextLevel -
-                skill.difficulty.difficultyXpIncrease) -
-            (xp - skill.currentXp),
+        'currentXp':
+            (skill.xpToNextLevel - skill.difficulty.difficultyXpIncrease) +
+                (skill.currentXp - xp),
         'currentLevel': skill.currentLevel - 1,
         'xpToNextLevel':
             skill.xpToNextLevel - skill.difficulty.difficultyXpIncrease,
@@ -252,12 +275,13 @@ class FirestoreMethods {
     await decrementSkillXp(user, skill, log.xp);
   }
 
-  Future<List<Log>> getLogs(AppUser user) async {
+  Stream<List<Log>> logsStream(AppUser user) {
     var ref = _firestore
         .collection('activity_logs')
         .doc(user.uid)
         .collection('activity_logs');
-    var snapshot = await ref.get();
-    return snapshot.docs.map((doc) => Log.fromSnapshot(doc)).toList();
+    return ref
+        .snapshots()
+        .map((list) => list.docs.map((doc) => Log.fromSnapshot(doc)).toList());
   }
 }
