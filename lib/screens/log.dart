@@ -31,7 +31,15 @@ class _LogScreenState extends State<LogScreen> {
           }
 
           if (snapshot.data!.isEmpty) {
-            return const Center(child: Text('No logs yet'));
+            return const Center(
+              child: Text(
+                'No activities in log yet!',
+                style: TextStyle(
+                    fontSize: 20,
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold),
+              ),
+            );
           }
 
           return ListView.builder(
