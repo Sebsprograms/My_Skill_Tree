@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:my_skill_tree/models/skill.dart';
 import 'package:my_skill_tree/providers/user_provider.dart';
 import 'package:my_skill_tree/resources/firebase_firestore.dart';
+import 'package:my_skill_tree/widgets/add_skill_dialog.dart';
 import 'package:my_skill_tree/widgets/skill_card.dart';
 import 'package:provider/provider.dart';
 
@@ -33,6 +34,47 @@ class SkillList extends StatelessWidget {
                 ));
           }
           final skills = snapshot.data!;
+
+          if (skills.isEmpty) {
+            return Container(
+              color: Theme.of(context).colorScheme.secondary,
+              height: double.infinity,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Text(
+                    'Add a skill to get started!',
+                    style: TextStyle(
+                      fontSize: 20,
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  IconButton(
+                    style: ButtonStyle(
+                      backgroundColor: MaterialStateProperty.all<Color>(
+                          Theme.of(context).colorScheme.primary),
+                    ),
+                    onPressed: () {
+                      showDialog(
+                          context: context,
+                          builder: (context) {
+                            return const AddSkillDialog();
+                          });
+                    },
+                    icon: const Icon(
+                      Icons.add,
+                      size: 48,
+                      color: Colors.white,
+                    ),
+                  ),
+                ],
+              ),
+            );
+          }
+
           return ListView.builder(
             itemCount: skills.length,
             itemBuilder: (BuildContext context, int index) {

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:my_skill_tree/models/activity.dart';
 import 'package:my_skill_tree/widgets/activity_card.dart';
+import 'package:my_skill_tree/widgets/add_activity_dialog.dart';
 
 class ActivityList extends StatelessWidget {
   const ActivityList({super.key, required this.activitiesStream});
@@ -21,7 +22,43 @@ class ActivityList extends StatelessWidget {
         }
 
         if (snapshot.data!.isEmpty) {
-          return const Center(child: Text('No activities yet'));
+          return Container(
+            color: Theme.of(context).colorScheme.secondary,
+            height: double.infinity,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Text(
+                  'Add an activity to get started!',
+                  style: TextStyle(
+                    fontSize: 20,
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 16),
+                IconButton(
+                  style: ButtonStyle(
+                    backgroundColor: MaterialStateProperty.all<Color>(
+                        Theme.of(context).colorScheme.primary),
+                  ),
+                  onPressed: () {
+                    showDialog(
+                        context: context,
+                        builder: (context) {
+                          return const AddActivityDialog();
+                        });
+                  },
+                  icon: const Icon(
+                    Icons.add,
+                    size: 48,
+                    color: Colors.white,
+                  ),
+                ),
+              ],
+            ),
+          );
         }
 
         return Container(
