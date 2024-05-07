@@ -7,6 +7,8 @@ import 'package:my_skill_tree/models/user.dart';
 class FirestoreMethods {
   final _firestore = FirebaseFirestore.instance;
 
+  // Skills
+
   Stream<List<Skill>> skillStream(AppUser user) {
     var ref =
         _firestore.collection('skills').doc(user.uid).collection('skills');
@@ -30,6 +32,8 @@ class FirestoreMethods {
     return snapshot.docs.map((doc) => Skill.fromSnapshot(doc)).toList();
   }
 
+  // Activities
+
   Stream<List<Activity>> allActivitiesStream(AppUser user) {
     var ref = _firestore
         .collection('activities')
@@ -37,6 +41,26 @@ class FirestoreMethods {
         .collection('activities');
     return ref.snapshots().map(
         (list) => list.docs.map((doc) => Activity.fromSnapshot(doc)).toList());
+  }
+
+  Future<List<Activity>> allActivities(AppUser user) async {
+    var ref = _firestore
+        .collection('activities')
+        .doc(user.uid)
+        .collection('activities');
+    var snapshot = await ref.get();
+    return snapshot.docs.map((doc) => Activity.fromSnapshot(doc)).toList();
+  }
+
+  Future<List<Activity>> activitiesForSkill(
+      AppUser user, String skillId) async {
+    var ref = _firestore
+        .collection('activities')
+        .doc(user.uid)
+        .collection('activities')
+        .where('skillId', isEqualTo: skillId);
+    var snapshot = await ref.get();
+    return snapshot.docs.map((doc) => Activity.fromSnapshot(doc)).toList();
   }
 
   Future<Activity> getOneActivityById(AppUser user, String activityId) async {
@@ -259,6 +283,24 @@ class FirestoreMethods {
     // Increment the skill's xp
     Skill skill = await getOneSkillById(user, activity.skillId);
     await incrememtSkillXp(user, skill, activity.reward.value);
+  }
+
+  Future<void> deleteMostRecentLogOfActivity(
+      AppUser user, Activity activity) async {
+    // Get the most recent log of the activity
+    var ref = _firestore
+        .collection('activity_logs')
+        .doc(user.uid)
+        .collection('activity_logs')
+        .where('activityId', isEqualTo: activity.id)
+        .orderBy('timeStamp', descending: true)
+        .limit(1);
+    var snapshot = await ref.get();
+    if (snapshot.docs.isEmpty) {
+      return;
+    }
+    Log log = Log.fromSnapshot(snapshot.docs.first);
+    await deleteLogAndDecrementSkill(user, log);
   }
 
   Future<void> deleteLogAndDecrementSkill(AppUser user, Log log) async {
