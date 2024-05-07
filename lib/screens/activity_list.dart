@@ -75,7 +75,9 @@ class ActivityList extends StatelessWidget {
             itemBuilder: (BuildContext context, int index) {
               final Activity activity = snapshot.data![index];
               return ActivityCard(
-                  activity: activity, key: ValueKey(activity.id));
+                activity: activity,
+                key: ValueKey(activity.id),
+              );
             },
           ),
         );

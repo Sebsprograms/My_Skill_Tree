@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -7,8 +8,34 @@ import 'package:my_skill_tree/resources/firebase_auth.dart';
 import 'package:my_skill_tree/utils/globals.dart';
 import 'package:provider/provider.dart';
 
-class Settings extends StatelessWidget {
+class Settings extends StatefulWidget {
   const Settings({super.key});
+
+  @override
+  State<Settings> createState() => _SettingsState();
+}
+
+class _SettingsState extends State<Settings> {
+  bool _isEditMode = false;
+  TextEditingController _nameController = TextEditingController();
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    super.dispose();
+  }
+
+  void _saveName() async {
+    if (_nameController.text.isNotEmpty) {
+      await AuthMethods().updateUserName(_nameController.text);
+      setState(() {
+        _isEditMode = false;
+      });
+      UserProvider userProvider =
+          Provider.of<UserProvider>(context, listen: false);
+      userProvider.getCurrentUser();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -27,14 +54,33 @@ class Settings extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const SizedBox(
-                      width: 48,
-                    ),
-                    Text(user.name,
-                        style: Theme.of(context).textTheme.headlineMedium),
+                    if (_isEditMode)
+                      Expanded(
+                        child: TextField(
+                          controller: _nameController,
+                          style: Theme.of(context).textTheme.headlineMedium,
+                          decoration: const InputDecoration(
+                            border: InputBorder.none,
+                            hintText: 'Enter your name',
+                          ),
+                        ),
+                      ),
+                    if (!_isEditMode)
+                      Text(user.name,
+                          style: Theme.of(context).textTheme.headlineMedium),
+                    if (_isEditMode)
+                      IconButton(
+                        onPressed: _saveName,
+                        icon: Icon(Icons.save, size: 24),
+                      ),
                     IconButton(
-                        onPressed: () {},
-                        icon: const Icon(Icons.edit, size: 24)),
+                        onPressed: () {
+                          setState(() {
+                            _isEditMode = !_isEditMode;
+                          });
+                        },
+                        icon: Icon(_isEditMode ? Icons.close : Icons.edit,
+                            size: 24)),
                   ],
                 ),
                 Row(

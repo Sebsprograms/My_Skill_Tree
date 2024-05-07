@@ -4,10 +4,14 @@ import 'package:flutter/material.dart';
 import 'package:my_skill_tree/models/activity.dart';
 import 'package:my_skill_tree/providers/user_provider.dart';
 import 'package:my_skill_tree/resources/firebase_firestore.dart';
+import 'package:my_skill_tree/utils/show_snack_bar.dart';
 import 'package:provider/provider.dart';
 
 class ActivityCard extends StatefulWidget {
-  const ActivityCard({super.key, required this.activity});
+  const ActivityCard({
+    super.key,
+    required this.activity,
+  });
 
   final Activity activity;
 
@@ -63,24 +67,51 @@ class _ActivityCardState extends State<ActivityCard> {
     super.dispose();
   }
 
+  _undoLogActivity() async {
+    UserProvider userProvider =
+        Provider.of<UserProvider>(context, listen: false);
+    await FirestoreMethods()
+        .deleteMostRecentLogOfActivity(userProvider.user!, widget.activity);
+    _cooldownTimer?.cancel();
+    setState(() {
+      _isOnCooldown = false;
+    });
+  }
+
   _logActivity() async {
     setState(() {
       _isOnCooldown = true;
     });
+
     UserProvider userProvider =
         Provider.of<UserProvider>(context, listen: false);
+
     await FirestoreMethods()
         .logActivityAndIncrementSkill(userProvider.user!, widget.activity);
+
     _cooldown = widget.activity.cooldown;
-    startTimer();
+    // check if the widget is still mounted
+    if (mounted) {
+      startTimer();
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     //  Conditionally render either the activity details or a cooldown
     Widget content = InkWell(
-      onTap: _logActivity,
+      onTap: () async {
+        await _logActivity();
+
+        if (context.mounted) {
+          showFloatingSnackbar(
+              context,
+              'Activity Logged: ${widget.activity.name}, +${widget.activity.reward.value}XP',
+              _undoLogActivity);
+        }
+      },
       child: Card(
+        color: Theme.of(context).colorScheme.secondaryContainer,
         child: Padding(
           padding: const EdgeInsets.all(12.0),
           child: Column(
@@ -105,6 +136,9 @@ class _ActivityCardState extends State<ActivityCard> {
                 child: Container(),
               ),
               Text(widget.activity.name,
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 1,
+                  softWrap: false,
                   style: Theme.of(context)
                       .textTheme
                       .titleMedium!
@@ -148,30 +182,49 @@ class _ActivityCardState extends State<ActivityCard> {
                 borderRadius: BorderRadius.circular(12),
               ),
               margin: const EdgeInsets.all(4),
-              child: Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      widget.activity.name,
-                      style: Theme.of(context).textTheme.titleMedium!.copyWith(
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        widget.activity.name,
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 1,
+                        softWrap: false,
+                        style:
+                            Theme.of(context).textTheme.titleMedium!.copyWith(
+                                  color: Colors.white,
+                                ),
+                      ),
+                      Text(
+                        'Cooldown:',
+                        style:
+                            Theme.of(context).textTheme.titleMedium!.copyWith(
+                                  color: Colors.white,
+                                ),
+                      ),
+                      if (_cooldown.inSeconds == 0)
+                        Container(
+                          margin: const EdgeInsets.all(8),
+                          child: const CircularProgressIndicator(
                             color: Colors.white,
                           ),
-                    ),
-                    Text(
-                      'Cooldown:',
-                      style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                            color: Colors.white,
-                          ),
-                    ),
-                    Text(
-                      // Displaying the remaining cooldown time HH:MM:SS
-                      '${_cooldown.inHours.toString().padLeft(2, '0')}:${(_cooldown.inMinutes % 60).toString().padLeft(2, '0')}:${(_cooldown.inSeconds % 60).toString().padLeft(2, '0')}',
-                      style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                            color: Colors.white,
-                          ),
-                    ),
-                  ],
+                        ),
+                      if (_cooldown.inSeconds > 0)
+                        Text(
+                          // Displaying the remaining cooldown time HH:MM:SS
+                          '${_cooldown.inHours.toString().padLeft(2, '0')}:${(_cooldown.inMinutes % 60).toString().padLeft(2, '0')}:${(_cooldown.inSeconds % 60).toString().padLeft(2, '0')}',
+                          style:
+                              Theme.of(context).textTheme.titleMedium!.copyWith(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 20,
+                                  ),
+                        ),
+                    ],
+                  ),
                 ),
               ),
             ),

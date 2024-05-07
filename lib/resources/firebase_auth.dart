@@ -102,4 +102,13 @@ class AuthMethods {
       );
     }
   }
+
+  Future<void> updateUserName(String name) async {
+    User? user = _auth.currentUser;
+    if (user != null) {
+      await _firestore.collection('users').doc(user.uid).update(
+        {'name': name},
+      );
+    }
+  }
 }
