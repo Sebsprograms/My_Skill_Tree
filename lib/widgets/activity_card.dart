@@ -104,7 +104,7 @@ class _ActivityCardState extends State<ActivityCard> {
         await _logActivity();
 
         if (context.mounted) {
-          showFloatingSnackbar(
+          showSnackBar(
               context,
               'Activity Logged: ${widget.activity.name}, +${widget.activity.reward.value}XP',
               _undoLogActivity);

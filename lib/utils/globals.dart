@@ -1,5 +1,13 @@
 import 'package:flutter/material.dart';
 
+const navigationIcons = {
+  'Activities': Icons.workspaces_outline,
+  'Statistics': Icons.bar_chart_rounded,
+  'Skills': Icons.linear_scale_rounded,
+  'Log': Icons.list,
+  'Settings': Icons.settings,
+};
+
 const skillColors = {
   'Green': Colors.green,
   'Blue': Colors.blue,

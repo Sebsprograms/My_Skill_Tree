@@ -75,12 +75,17 @@ class SkillList extends StatelessWidget {
             );
           }
 
-          return ListView.builder(
-            itemCount: skills.length,
-            itemBuilder: (BuildContext context, int index) {
-              final skill = skills[index];
-              return SkillCard(skill: skill, key: ValueKey(skill.id));
-            },
+          return Center(
+            child: Container(
+              width: MediaQuery.of(context).size.width > 600 ? 600 : null,
+              child: ListView.builder(
+                itemCount: skills.length,
+                itemBuilder: (BuildContext context, int index) {
+                  final skill = skills[index];
+                  return SkillCard(skill: skill, key: ValueKey(skill.id));
+                },
+              ),
+            ),
           );
         },
       ),
