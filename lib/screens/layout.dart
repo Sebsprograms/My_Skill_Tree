@@ -6,6 +6,7 @@ import 'package:my_skill_tree/screens/loading_screen.dart';
 import 'package:my_skill_tree/screens/log.dart';
 import 'package:my_skill_tree/screens/settings.dart';
 import 'package:my_skill_tree/screens/skills_list.dart';
+import 'package:my_skill_tree/utils/globals.dart';
 import 'package:my_skill_tree/widgets/add_activity_dialog.dart';
 import 'package:my_skill_tree/widgets/add_skill_dialog.dart';
 import 'package:provider/provider.dart';
@@ -50,20 +51,81 @@ class _LayoutState extends State<Layout> {
 
   @override
   Widget build(BuildContext context) {
+    double width = MediaQuery.of(context).size.width;
+
     UserProvider user = Provider.of<UserProvider>(context);
     if (user.user == null) {
       return const LoadingScreen();
     }
     return Scaffold(
       appBar: AppBar(
+        toolbarHeight: width > 1024 ? 80 : null,
         backgroundColor: Theme.of(context).colorScheme.primary,
         title: Text(
           pageTitles[_page],
-          style: Theme.of(context)
-              .textTheme
-              .headlineMedium!
-              .copyWith(color: Theme.of(context).colorScheme.onPrimary),
+          style: width > 1024
+              ? Theme.of(context)
+                  .textTheme
+                  .headlineLarge!
+                  .copyWith(color: Theme.of(context).colorScheme.onPrimary)
+              : Theme.of(context)
+                  .textTheme
+                  .headlineMedium!
+                  .copyWith(color: Theme.of(context).colorScheme.onPrimary),
         ),
+        leadingWidth: width > 1024 ? 400 : null,
+        leading: width > 1024
+            ? Padding(
+                padding: const EdgeInsets.only(
+                  left: 24,
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: navigationIcons.entries.map((entry) {
+                    int index =
+                        navigationIcons.keys.toList().indexOf(entry.key);
+                    return GestureDetector(
+                        onTap: () {
+                          _pageController.jumpToPage(index);
+                          setState(() {
+                            _page = index;
+                          });
+                        },
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              entry.value,
+                              color: _page == index
+                                  ? Theme.of(context).colorScheme.onPrimary
+                                  : Theme.of(context)
+                                      .colorScheme
+                                      .onPrimary
+                                      .withOpacity(0.5),
+                              size: 32.0,
+                            ),
+                            Text(
+                              entry.key,
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .titleMedium!
+                                  .copyWith(
+                                    color: _page == index
+                                        ? Theme.of(context)
+                                            .colorScheme
+                                            .onPrimary
+                                        : Theme.of(context)
+                                            .colorScheme
+                                            .onPrimary
+                                            .withOpacity(0.5),
+                                  ),
+                            ),
+                          ],
+                        ));
+                  }).toList(),
+                ),
+              )
+            : null,
         actions: [
           if (_page == 0)
             IconButton(
@@ -118,49 +180,25 @@ class _LayoutState extends State<Layout> {
           const Settings(),
         ],
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        type: BottomNavigationBarType.fixed,
-        backgroundColor: Theme.of(context).colorScheme.primaryContainer,
-        currentIndex: _page,
-        onTap: (int index) {
-          _pageController.jumpToPage(index);
-          setState(() {
-            _page = index;
-          });
-        },
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(
-              Icons.workspaces_outline,
+      bottomNavigationBar: width > 1024
+          ? null
+          : BottomNavigationBar(
+              type: BottomNavigationBarType.fixed,
+              backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+              currentIndex: _page,
+              onTap: (int index) {
+                _pageController.jumpToPage(index);
+                setState(() {
+                  _page = index;
+                });
+              },
+              items: navigationIcons.entries
+                  .map((entry) => BottomNavigationBarItem(
+                        icon: Icon(entry.value),
+                        label: entry.key,
+                      ))
+                  .toList(),
             ),
-            label: 'Activities',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(
-              Icons.bar_chart_rounded,
-            ),
-            label: 'Statistics',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(
-              Icons.linear_scale_rounded,
-            ),
-            label: 'Skills',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(
-              Icons.list,
-            ),
-            label: 'Log',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(
-              Icons.settings,
-            ),
-            label: 'Settings',
-          ),
-        ],
-      ),
     );
   }
 }

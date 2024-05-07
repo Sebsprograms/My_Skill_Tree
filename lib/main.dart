@@ -52,6 +52,7 @@ class _AppState extends State<App> {
   Widget build(BuildContext context) {
     AppUser? user = Provider.of<UserProvider>(context).user;
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'My Skill Tree',
       theme: ThemeData(
         // check user collection for selected ui color.

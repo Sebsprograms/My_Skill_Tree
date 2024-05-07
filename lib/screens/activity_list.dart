@@ -61,12 +61,41 @@ class ActivityList extends StatelessWidget {
           );
         }
 
+        double width = MediaQuery.of(context).size.width;
+
+        int _getCrossAxisCount() {
+          int count = 2;
+          if (width > 550) {
+            count = 3;
+          }
+          if (width > 750) {
+            count = 4;
+          }
+          if (width > 950) {
+            count = 5;
+          }
+          if (width > 1150) {
+            count = 6;
+          }
+          if (width > 1350) {
+            count = 7;
+          }
+          if (width > 1550) {
+            count = 8;
+          }
+          if (width > 1750) {
+            count = 9;
+          }
+
+          return count;
+        }
+
         return Container(
           color: Theme.of(context).colorScheme.secondary,
           padding: const EdgeInsets.all(16),
           child: GridView.builder(
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 2,
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: _getCrossAxisCount(),
               childAspectRatio: 1.15,
               mainAxisSpacing: 8,
               crossAxisSpacing: 8,

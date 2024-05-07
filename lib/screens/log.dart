@@ -42,12 +42,17 @@ class _LogScreenState extends State<LogScreen> {
             );
           }
 
-          return ListView.builder(
-            itemCount: snapshot.data!.length,
-            itemBuilder: (context, index) {
-              final Log log = snapshot.data![index];
-              return LogEntry(log: log, key: ValueKey(log.id));
-            },
+          return Center(
+            child: Container(
+              width: MediaQuery.of(context).size.width > 600 ? 600 : null,
+              child: ListView.builder(
+                itemCount: snapshot.data!.length,
+                itemBuilder: (context, index) {
+                  final Log log = snapshot.data![index];
+                  return LogEntry(log: log, key: ValueKey(log.id));
+                },
+              ),
+            ),
           );
         },
       ),
